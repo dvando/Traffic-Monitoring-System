@@ -1,6 +1,4 @@
-streamlit
-opencv-python
-numpy
+opencv-python==4.6.0.66
 ultralytics
 av
 streamlit_webrtc
