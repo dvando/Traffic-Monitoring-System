@@ -1,7 +1,7 @@
+import streamlit as st
 import cv2
 import av
 import sys
-import streamlit as st
 import argparse
 from traffic import TrafficCalculator
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
@@ -36,7 +36,7 @@ class VideoTransformer(VideoTransformerBase):
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
     use_webcam = True
-    traffic = TrafficCalculator(model_path='yolov8n.pt')
+    traffic = TrafficCalculator()
     
     def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
         res = frame.to_ndarray(format="bgr24")
