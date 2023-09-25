@@ -58,8 +58,8 @@ if __name__ == '__main__':
         webrtc_streamer(
                 key="my_traffic",
                 video_frame_callback=video_frame_callback,
-                media_stream_constraints={"video": True, "audio": False}
-                # async_processing=True
+                media_stream_constraints={"video": True, "audio": False},
+                async_processing=True
             )
     else:
         st.video(args.vid_path)
