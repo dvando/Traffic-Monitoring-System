@@ -58,6 +58,9 @@ if __name__ == '__main__':
         webrtc_streamer(
                 key="my_traffic",
                 video_frame_callback=video_frame_callback,
+                rtc_configuration={  # Add this config
+				"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+			    },
                 media_stream_constraints={"video": True, "audio": False},
                 async_processing=True
             )
