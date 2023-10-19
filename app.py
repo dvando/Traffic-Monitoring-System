@@ -3,6 +3,7 @@ import cv2
 import av
 import sys
 import argparse
+import time
 from traffic import TrafficCalculator
 from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 
@@ -55,20 +56,26 @@ if __name__ == '__main__':
 
     st.header('Live Stream')
     if use_webcam:
-        webrtc_streamer(
-                key="my_traffic",
-                video_frame_callback=video_frame_callback,
-                rtc_configuration={  # Add this config
-				"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-			    },
-                media_stream_constraints={"video": True, "audio": False},
-                async_processing=True
-            )
+        # webrtc_streamer(
+        #         key="my_traffic",
+        #         video_frame_callback=video_frame_callback,
+        #         rtc_configuration={  # Add this config
+		# 		"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+		# 	    },
+        #         media_stream_constraints={"video": True, "audio": False},
+        #         async_processing=True
+        #     )
+        img_ph = st.empty()
+        cap = cv2.VideoCapture(0)
     else:
-        st.video(args.vid_path)
+        img = st.empty()
+        cap = cv2.VideoCapture(args.vid_path)
+        # st.video(args.vid_path)
+        
 
     st.header("Stats")
     col1, col2 = st.columns(2)
+    
     
     with col1:    
         st.subheader('Average Number of Car per Hour')
@@ -81,3 +88,13 @@ if __name__ == '__main__':
         sc = st.empty()
         traffic.update_streamlit(sc, traffic.num_chart)
         # sc.line_chart(traffic.speed_chart)
+
+    
+    while True:
+        _, frame = cap.read()
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        res = traffic.track(frame)
+        img_ph.image(res, use_column_width=True)
+        traffic.update_streamlit(lc, traffic.num_chart)
+        traffic.update_streamlit(sc, traffic.num_chart)
+        time.sleep(0.01)
