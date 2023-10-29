@@ -49,7 +49,7 @@ class TrafficCalculator:
                 self.stats[track] = (centroids[i], time.time())
         
         self.calc_stats()        
-        res = self.plot(res)
+        # res = self.plot(res)
 
         return res
     
@@ -137,5 +137,8 @@ class TrafficCalculator:
         
         return res
     
-    def update_streamlit(self, placeholder, data):
-        placeholder.line_chart(data)
+    def update_streamlit(self, placeholder, data, image=False):
+        if image:
+            placeholder.image(data)
+        else:
+            placeholder.line_chart(data)

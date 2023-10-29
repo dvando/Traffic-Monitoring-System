@@ -52,9 +52,9 @@ if __name__ == '__main__':
     )
 
     st.title("Real-Time / Live Traffic Monitoring Dashboard Based on YOLOv4")
+    st.divider()
 
-
-    st.header('Live Stream')
+    st.header('Live Stream')    
     if use_webcam:
         # webrtc_streamer(
         #         key="my_traffic",
@@ -66,16 +66,33 @@ if __name__ == '__main__':
         #         async_processing=True
         #     )
         img_ph = st.empty()
-        cap = cv2.VideoCapture(0)
-    else:
-        img = st.empty()
-        cap = cv2.VideoCapture(args.vid_path)
-        # st.video(args.vid_path)
-        
+        @st.cache_resource()
+        def get_cap():
+            return cv2.VideoCapture(0)
 
-    st.header("Stats")
-    col1, col2 = st.columns(2)
+        cap = get_cap()
+    else:
+        img_ph = st.empty()
+        @st.cache_resource()
+        def get_cap():
+            return cv2.VideoCapture(args.vid_path)
+
+    stream_toggle = st.toggle(label='Show Stream')
     
+    st.divider()
+    
+    st.header('Real-time Stats')
+    colrt_1, colrt_2, colrt_3 = st.columns(3)
+    with colrt_1:
+        tr_stat = st.empty()
+    with colrt_2:
+        car_num = st.empty()
+    with colrt_3:
+        car_speed = st.empty()
+    
+    st.divider()
+    st.header("Stats Summary")
+    col1, col2 = st.columns(2)
     
     with col1:    
         st.subheader('Average Number of Car per Hour')
@@ -92,9 +109,15 @@ if __name__ == '__main__':
     
     while True:
         _, frame = cap.read()
+    
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         res = traffic.track(frame)
-        img_ph.image(res, use_column_width=True)
+        if stream_toggle:
+            img_ph.image(res, use_column_width=True)
+                
+        tr_stat.metric("Traffic Status", traffic.cur_stat)
+        car_num.metric("Total Car", traffic.cur_num)
+        car_speed.metric("Average Speed", traffic.cur_speed_avg)
         traffic.update_streamlit(lc, traffic.num_chart)
         traffic.update_streamlit(sc, traffic.num_chart)
         time.sleep(0.01)
