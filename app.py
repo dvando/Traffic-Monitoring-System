@@ -77,6 +77,8 @@ if __name__ == '__main__':
         def get_cap():
             return cv2.VideoCapture(args.vid_path)
 
+        cap = get_cap()
+        
     stream_toggle = st.toggle(label='Show Stream')
     
     st.divider()
